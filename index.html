@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
+
+  <title>Sólidos de Revolución</title>
+
+
+  <!-- ================================================== -->
+  <!-- A-FRAME                                            -->
+  <!-- ================================================== -->
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+
+  <!-- ================================================== -->
+  <!-- MINDAR                                             -->
+  <!-- ================================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+
+
+  <style>
+
+    html,
+    body {
+
+      margin: 0;
+      padding: 0;
+
+      width: 100%;
+      height: 100%;
+
+      overflow: hidden;
+
+      font-family: Arial, Helvetica, sans-serif;
+
+    }
+
+
+    /* ================================================ */
+    /* QUITAR BOTÓN VR                                  */
+    /* ================================================ */
+
+    .a-enter-vr,
+    .a-enter-vr-button,
+    .a-enter-ar,
+    .a-enter-ar-button {
+
+      display: none !important;
+
+    }
+
+
+
+    /* ================================================ */
+    /* MENSAJE SUPERIOR                                 */
+    /* ================================================ */
+
+    #estado {
+
+      position: fixed;
+
+      top: 12px;
+      left: 50%;
+
+      transform: translateX(-50%);
+
+      z-index: 9999;
+
+      padding: 10px 15px;
+
+      border-radius: 14px;
+
+      background: rgba(0, 0, 0, 0.72);
+
+      color: white;
+
+      font-size: 14px;
+
+      text-align: center;
+
+      white-space: nowrap;
+
+      box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+
+    }
+
+
+
+    /* ================================================ */
+    /* BOTONES                                          */
+    /* ================================================ */
+
+    #controles {
+
+      position: fixed;
+
+      bottom: 18px;
+      left: 0;
+      right: 0;
+
+      z-index: 9999;
+
+      display: flex;
+
+      justify-content: center;
+
+      flex-wrap: wrap;
+
+      gap: 9px;
+
+      padding: 0 12px;
+
+    }
+
+
+    button {
+
+      border: none;
+
+      border-radius: 18px;
+
+      padding: 14px 17px;
+
+      min-width: 135px;
+
+      background: white;
+
+      color: #222;
+
+      font-size: 14px;
+
+      font-weight: bold;
+
+      box-shadow: 0 3px 10px rgba(0,0,0,0.38);
+
+      cursor: pointer;
+
+      transition:
+        opacity 0.2s,
+        transform 0.1s;
+
+    }
+
+
+    /*
+    Mientras no se detecta la imagen:
+
+    los botones siguen ahí,
+    pero se ven atenuados
+    y NO funcionan.
+    */
+
+    button:disabled {
+
+      opacity: 0.28;
+
+      cursor: default;
+
+    }
+
+
+    button:not(:disabled):active {
+
+      transform: scale(0.95);
+
+    }
+
+  </style>
+
+
+
+  <script>
+
+    /* ==================================================
+       FIGURA PERSONALIZADA: TRIÁNGULO
+       ================================================== */
+
+    AFRAME.registerComponent(
+
+      "triangulo-revolucion",
+
+      {
+
+        init: function () {
+
+
+          const shape =
+            new THREE.Shape();
+
+
+          /*
+          Triángulo rectángulo.
+
+          El eje de giro queda en X = 0.
+
+                  *
+                  |\
+                  | \
+             eje |  \ generatriz
+                  |   \
+                  |____\
+          */
+
+
+          shape.moveTo(
+            0,
+            -0.22
+          );
+
+
+          shape.lineTo(
+            0,
+            0.22
+          );
+
+
+          shape.lineTo(
+            0.28,
+            -0.22
+          );
+
+
+          shape.closePath();
+
+
+
+          const geometria =
+            new THREE.ShapeGeometry(
+              shape
+            );
+
+
+
+          const material =
+            new THREE.MeshBasicMaterial({
+
+              color: 0xff9800,
+
+              side: THREE.DoubleSide,
+
+              transparent: true,
+
+              opacity: 0.82
+
+            });
+
+
+
+          const mesh =
+            new THREE.Mesh(
+              geometria,
+              material
+            );
+
+
+          this.el.setObject3D(
+            "mesh",
+            mesh
+          );
+
+
+        }
+
+      }
+
+    );
+
+
+
+    /* ==================================================
+       FIGURA PERSONALIZADA: SEMICÍRCULO
+       ================================================== */
+
+    AFRAME.registerComponent(
+
+      "semicirculo-revolucion",
+
+      {
+
+        init: function () {
+
+
+          const radio = 0.24;
+
+
+          const shape =
+            new THREE.Shape();
+
+
+
+          /*
+          Empezamos abajo del diámetro.
+          */
+
+
+          shape.moveTo(
+            0,
+            -radio
+          );
+
+
+
+          /*
+          Construimos el arco derecho
+          del semicírculo.
+          */
+
+
+          const pasos = 40;
+
+
+          for (
+            let i = 0;
+            i <= pasos;
+            i++
+          ) {
+
+
+            const angulo =
+
+              -Math.PI / 2
+
+              +
+
+              (
+                Math.PI *
+                i /
+                pasos
+              );
+
+
+
+            const x =
+              radio *
+              Math.cos(
+                angulo
+              );
+
+
+            const y =
+              radio *
+              Math.sin(
+                angulo
+              );
+
+
+
+            shape.lineTo(
+              x,
+              y
+            );
+
+
+          }
+
+
+
+          /*
+          Cerramos por el diámetro.
+          */
+
+
+          shape.lineTo(
+            0,
+            -radio
+          );
+
+
+          shape.closePath();
+
+
+
+          const geometria =
+            new THREE.ShapeGeometry(
+              shape
+            );
+
+
+
+          const material =
+            new THREE.MeshBasicMaterial({
+
+              color: 0x66bb6a,
+
+              side: THREE.DoubleSide,
+
+              transparent: true,
+
+              opacity: 0.80
+
+            });
+
+
+
+          const mesh =
+            new THREE.Mesh(
+              geometria,
+              material
+            );
+
+
+
+          this.el.setObject3D(
+            "mesh",
+            mesh
+          );
+
+
+        }
+
+      }
+
+    );
+
+
+
+    /* ==================================================
+       ARCO ROJO = GENERATRIZ DEL SEMICÍRCULO
+       ================================================== */
+
+    AFRAME.registerComponent(
+
+      "arco-generatriz",
+
+      {
+
+        init: function () {
+
+
+          const radio = 0.24;
+
+
+          const puntos = [];
+
+
+          const pasos = 40;
+
+
+
+          for (
+            let i = 0;
+            i <= pasos;
+            i++
+          ) {
+
+
+            const angulo =
+
+              -Math.PI / 2
+
+              +
+
+              (
+                Math.PI *
+                i /
+                pasos
+              );
+
+
+
+            puntos.push(
+
+              new THREE.Vector3(
+
+                radio *
+                Math.cos(
+                  angulo
+                ),
+
+                radio *
+                Math.sin(
+                  angulo
+                ),
+
+                0.012
+
+              )
+
+            );
+
+
+          }
+
+
+
+          const geometria =
+            new THREE.BufferGeometry()
+              .setFromPoints(
+                puntos
+              );
+
+
+
+          const material =
+            new THREE.LineBasicMaterial({
+
+              color: 0xff1744
+
+            });
+
+
+
+          const linea =
+            new THREE.Line(
+
+              geometria,
+
+              material
+
+            );
+
+
+
+          this.el.setObject3D(
+
+            "mesh",
+
+            linea
+
+          );
+
+
+        }
+
+      }
+
+    );
+
+  </script>
+
+
+</head>
+
+
+
+<body>
+
+
+<!-- ==================================================== -->
+<!-- MENSAJE                                             -->
+<!-- ==================================================== -->
+
+<div id="estado">
+
+  Enfoca una de las tres figuras
+
+</div>
+
+
+
+<!-- ==================================================== -->
+<!-- BOTONES                                             -->
+<!-- ==================================================== -->
+
+<div id="controles">
+
+
+  <button
+    id="btnGeneratriz"
+    disabled>
+
+    GENERATRIZ
+
+  </button>
+
+
+  <button
+    id="btnGirar"
+    disabled>
+
+    GIRAR
+
+  </button>
+
+
+  <button
+    id="btnDetener"
+    disabled>
+
+    DETENER
+
+  </button>
+
+
+  <button
+    id="btnReiniciar"
+    disabled>
+
+    REINICIAR
+
+  </button>
+
+
+</div>
+
+
+
+<!-- ==================================================== -->
+<!-- ESCENA                                              -->
+<!-- ==================================================== -->
+
+<a-scene
+
+  mindar-image="
+    imageTargetSrc: ./targets.mind;
+  "
+
+  vr-mode-ui="
+    enabled: false
+  "
+
+  device-orientation-permission-ui="
+    enabled: false
+  "
+
+  renderer="
+    colorManagement: true;
+  "
+
+>
+
+
+  <!-- ================================================== -->
+  <!-- CÁMARA                                             -->
+  <!-- ================================================== -->
+
+  <a-camera
+
+    position="0 0 0"
+
+    look-controls="
+      enabled: false
+    ">
+
+  </a-camera>
+
+
+
+  <!-- ################################################## -->
+  <!--                                                    -->
+  <!-- TARGET 0                                           -->
+  <!--                                                    -->
+  <!-- IMAGEN 1 = SEMICÍRCULO                             -->
+  <!--                                                    -->
+  <!-- SEMICÍRCULO → ESFERA                               -->
+  <!--                                                    -->
+  <!-- ################################################## -->
+
+
+  <a-entity
+
+    id="targetSemicirculo"
+
+    mindar-image-target="
+      targetIndex: 0
+    "
+
+  >
+
+
+
+    <!-- TÍTULO -->
+
+    <a-text
+
+      value="Semicirculo  ->  ESFERA"
+
+      position="0 0.42 0.03"
+
+      align="center"
+
+      color="#ffffff"
+
+      width="2.4">
+
+    </a-text>
+
+
+
+    <!-- ================================================= -->
+    <!-- EJE DE GIRO                                       -->
+    <!-- ================================================= -->
+
+    <a-entity
+
+      id="ejeSemicirculo"
+
+      visible="false"
+
+      line="
+        start: 0 -0.31 0.02;
+        end: 0 0.31 0.02;
+        color: #2962ff
+      ">
+
+    </a-entity>
+
+
+
+    <!-- TEXTO EJE -->
+
+    <a-text
+
+      id="textoEjeSemicirculo"
+
+      visible="false"
+
+      value="EJE DE GIRO"
+
+      position="-0.15 0.31 0.03"
+
+      color="#2962ff"
+
+      width="1.4">
+
+    </a-text>
+
+
+
+    <!-- ================================================= -->
+    <!-- ROTOR                                             -->
+    <!-- ================================================= -->
+
+    <a-entity
+
+      id="rotorSemicirculo">
+
+
+
+
+      <!-- FIGURA -->
+
+      <a-entity
+
+        semicirculo-revolucion
+
+        position="0 0 0.04">
+
+      </a-entity>
+
+
+
+
+      <!-- GENERATRIZ -->
+
+      <a-entity
+
+        id="generatrizSemicirculo"
+
+        arco-generatriz
+
+        visible="false"
+
+        position="0 0 0.055">
+
+      </a-entity>
+
+
+    </a-entity>
+
+
+
+    <!-- ================================================= -->
+    <!-- ESFERA RESULTANTE                                 -->
+    <!-- ================================================= -->
+
+    <a-sphere
+
+      id="solidoSemicirculo"
+
+      visible="false"
+
+      position="0 0 0"
+
+      radius="0.24"
+
+      color="#42a5f5"
+
+      material="
+        transparent: true;
+        opacity: 0.27;
+        side: double
+      ">
+
+    </a-sphere>
+
+
+
+    <!-- TEXTO RESULTADO -->
+
+    <a-text
+
+      id="resultadoSemicirculo"
+
+      visible="false"
+
+      value="Se forma una ESFERA"
+
+      position="0 -0.39 0.03"
+
+      align="center"
+
+      color="#ffffff"
+
+      width="2.2">
+
+    </a-text>
+
+
+
+  </a-entity>
+
+
+
+
+
+  <!-- ################################################## -->
+  <!--                                                    -->
+  <!-- TARGET 1                                           -->
+  <!--                                                    -->
+  <!-- IMAGEN 2 = RECTÁNGULO                              -->
+  <!--                                                    -->
+  <!-- RECTÁNGULO → CILINDRO                              -->
+  <!--                                                    -->
+  <!-- ################################################## -->
+
+
+  <a-entity
+
+    id="targetRectangulo"
+
+    mindar-image-target="
+      targetIndex: 1
+    "
+
+  >
+
+
+
+    <!-- TÍTULO -->
+
+    <a-text
+
+      value="Rectangulo  ->  CILINDRO"
+
+      position="0 0.42 0.03"
+
+      align="center"
+
+      color="#ffffff"
+
+      width="2.4">
+
+    </a-text>
+
+
+
+    <!-- ================================================= -->
+    <!-- EJE DE GIRO                                       -->
+    <!-- ================================================= -->
+
+    <a-entity
+
+      id="ejeRectangulo"
+
+      visible="false"
+
+      line="
+        start: 0 -0.29 0.02;
+        end: 0 0.29 0.02;
+        color: #2962ff
+      ">
+
+    </a-entity>
+
+
+
+    <a-text
+
+      id="textoEjeRectangulo"
+
+      visible="false"
+
+      value="EJE DE GIRO"
+
+      position="-0.15 0.30 0.03"
+
+      color="#2962ff"
+
+      width="1.4">
+
+    </a-text>
+
+
+
+    <!-- ================================================= -->
+    <!-- ROTOR                                             -->
+    <!-- ================================================= -->
+
+    <a-entity
+
+      id="rotorRectangulo">
+
+
+
+      <!-- RECTÁNGULO -->
+
+      <a-plane
+
+        position="0.14 0 0.04"
+
+        width="0.28"
+
+        height="0.44"
+
+        color="#ffc107"
+
+        material="
+          transparent: true;
+          opacity: 0.82;
+          side: double
+        ">
+
+      </a-plane>
+
+
+
+      <!-- GENERATRIZ DEL CILINDRO -->
+
+      <a-entity
+
+        id="generatrizRectangulo"
+
+        visible="false"
+
+        line="
+          start: 0.28 -0.22 0.055;
+          end: 0.28 0.22 0.055;
+          color: #ff1744
+        ">
+
+      </a-entity>
+
+
+    </a-entity>
+
+
+
+    <!-- ================================================= -->
+    <!-- CILINDRO RESULTANTE                               -->
+    <!-- ================================================= -->
+
+    <a-cylinder
+
+      id="solidoRectangulo"
+
+      visible="false"
+
+      position="0 0 0"
+
+      radius="0.28"
+
+      height="0.44"
+
+      color="#29b6f6"
+
+      material="
+        transparent: true;
+        opacity: 0.25;
+        side: double
+      ">
+
+    </a-cylinder>
+
+
+
+    <!-- TEXTO -->
+
+    <a-text
+
+      id="resultadoRectangulo"
+
+      visible="false"
+
+      value="Se forma un CILINDRO"
+
+      position="0 -0.39 0.03"
+
+      align="center"
+
+      color="#ffffff"
+
+      width="2.2">
+
+    </a-text>
+
+
+
+  </a-entity>
+
+
+
+
+
+  <!-- ################################################## -->
+  <!--                                                    -->
+  <!-- TARGET 2                                           -->
+  <!--                                                    -->
+  <!-- IMAGEN 3 = TRIÁNGULO                               -->
+  <!--                                                    -->
+  <!-- TRIÁNGULO → CONO                                   -->
+  <!--                                                    -->
+  <!-- ################################################## -->
+
+
+  <a-entity
+
+    id="targetTriangulo"
+
+    mindar-image-target="
+      targetIndex: 2
+    "
+
+  >
+
+
+
+    <!-- TÍTULO -->
+
+    <a-text
+
+      value="Triangulo  ->  CONO"
+
+      position="0 0.42 0.03"
+
+      align="center"
+
+      color="#ffffff"
+
+      width="2.4">
+
+    </a-text>
+
+
+
+    <!-- ================================================= -->
+    <!-- EJE DE GIRO                                       -->
+    <!-- ================================================= -->
+
+    <a-entity
+
+      id="ejeTriangulo"
+
+      visible="false"
+
+      line="
+        start: 0 -0.29 0.02;
+        end: 0 0.29 0.02;
+        color: #2962ff
+      ">
+
+    </a-entity>
+
+
+
+    <a-text
+
+      id="textoEjeTriangulo"
+
+      visible="false"
+
+      value="EJE DE GIRO"
+
+      position="-0.15 0.30 0.03"
+
+      color="#2962ff"
+
+      width="1.4">
+
+    </a-text>
+
+
+
+    <!-- ================================================= -->
+    <!-- ROTOR                                             -->
+    <!-- ================================================= -->
+
+    <a-entity
+
+      id="rotorTriangulo">
+
+
+
+      <!-- TRIÁNGULO -->
+
+      <a-entity
+
+        triangulo-revolucion
+
+        position="0 0 0.04">
+
+      </a-entity>
+
+
+
+      <!-- GENERATRIZ = HIPOTENUSA -->
+
+      <a-entity
+
+        id="generatrizTriangulo"
+
+        visible="false"
+
+        line="
+          start: 0 0.22 0.055;
+          end: 0.28 -0.22 0.055;
+          color: #ff1744
+        ">
+
+      </a-entity>
+
+
+    </a-entity>
+
+
+
+    <!-- ================================================= -->
+    <!-- CONO RESULTANTE                                   -->
+    <!-- ================================================= -->
+
+    <a-cone
+
+      id="solidoTriangulo"
+
+      visible="false"
+
+      position="0 0 0"
+
+      radius-bottom="0.28"
+
+      radius-top="0.001"
+
+      height="0.44"
+
+      color="#ff7043"
+
+      material="
+        transparent: true;
+        opacity: 0.27;
+        side: double
+      ">
+
+    </a-cone>
+
+
+
+    <!-- TEXTO -->
+
+    <a-text
+
+      id="resultadoTriangulo"
+
+      visible="false"
+
+      value="Se forma un CONO"
+
+      position="0 -0.39 0.03"
+
+      align="center"
+
+      color="#ffffff"
+
+      width="2.2">
+
+    </a-text>
+
+
+
+  </a-entity>
+
+
+</a-scene>
+
+
+
+<script>
+
+
+  /* =====================================================
+     BOTONES
+     ===================================================== */
+
+
+  const btnGeneratriz =
+    document.querySelector(
+      "#btnGeneratriz"
+    );
+
+
+  const btnGirar =
+    document.querySelector(
+      "#btnGirar"
+    );
+
+
+  const btnDetener =
+    document.querySelector(
+      "#btnDetener"
+    );
+
+
+  const btnReiniciar =
+    document.querySelector(
+      "#btnReiniciar"
+    );
+
+
+  const estado =
+    document.querySelector(
+      "#estado"
+    );
+
+
+
+  const botones = [
+
+    btnGeneratriz,
+    btnGirar,
+    btnDetener,
+    btnReiniciar
+
+  ];
+
+
+
+  /* =====================================================
+     ESCENAS
+     ===================================================== */
+
+
+  const escenas = {
+
+
+    /* ---------------------------------------------
+       TARGET 0
+       SEMICÍRCULO
+       --------------------------------------------- */
+
+
+    semicirculo: {
+
+      nombre:
+        "Semicírculo",
+
+      solido:
+        "Esfera",
+
+      target:
+        document.querySelector(
+          "#targetSemicirculo"
+        ),
+
+      rotor:
+        document.querySelector(
+          "#rotorSemicirculo"
+        ),
+
+      generatriz:
+        document.querySelector(
+          "#generatrizSemicirculo"
+        ),
+
+      eje:
+        document.querySelector(
+          "#ejeSemicirculo"
+        ),
+
+      textoEje:
+        document.querySelector(
+          "#textoEjeSemicirculo"
+        ),
+
+      solido3D:
+        document.querySelector(
+          "#solidoSemicirculo"
+        ),
+
+      resultado:
+        document.querySelector(
+          "#resultadoSemicirculo"
+        )
+
+    },
+
+
+
+    /* ---------------------------------------------
+       TARGET 1
+       RECTÁNGULO
+       --------------------------------------------- */
+
+
+    rectangulo: {
+
+      nombre:
+        "Rectángulo",
+
+      solido:
+        "Cilindro",
+
+      target:
+        document.querySelector(
+          "#targetRectangulo"
+        ),
+
+      rotor:
+        document.querySelector(
+          "#rotorRectangulo"
+        ),
+
+      generatriz:
+        document.querySelector(
+          "#generatrizRectangulo"
+        ),
+
+      eje:
+        document.querySelector(
+          "#ejeRectangulo"
+        ),
+
+      textoEje:
+        document.querySelector(
+          "#textoEjeRectangulo"
+        ),
+
+      solido3D:
+        document.querySelector(
+          "#solidoRectangulo"
+        ),
+
+      resultado:
+        document.querySelector(
+          "#resultadoRectangulo"
+        )
+
+    },
+
+
+
+    /* ---------------------------------------------
+       TARGET 2
+       TRIÁNGULO
+       --------------------------------------------- */
+
+
+    triangulo: {
+
+      nombre:
+        "Triángulo",
+
+      solido:
+        "Cono",
+
+      target:
+        document.querySelector(
+          "#targetTriangulo"
+        ),
+
+      rotor:
+        document.querySelector(
+          "#rotorTriangulo"
+        ),
+
+      generatriz:
+        document.querySelector(
+          "#generatrizTriangulo"
+        ),
+
+      eje:
+        document.querySelector(
+          "#ejeTriangulo"
+        ),
+
+      textoEje:
+        document.querySelector(
+          "#textoEjeTriangulo"
+        ),
+
+      solido3D:
+        document.querySelector(
+          "#solidoTriangulo"
+        ),
+
+      resultado:
+        document.querySelector(
+          "#resultadoTriangulo"
+        )
+
+    }
+
+
+  };
+
+
+
+  /*
+  Aquí guardamos cuál imagen
+  está viendo actualmente
+  la cámara.
+  */
+
+
+  let escenaActual = null;
+
+
+
+  /* =====================================================
+     HABILITAR / DESHABILITAR BOTONES
+     ===================================================== */
+
+
+  function habilitarBotones(
+    activo
+  ) {
+
+
+    botones.forEach(
+
+      boton => {
+
+        boton.disabled =
+          !activo;
+
+      }
+
+    );
+
+
+  }
+
+
+
+  /* =====================================================
+     REINICIAR UNA ESCENA
+     ===================================================== */
+
+
+  function reiniciarEscena(
+    escena
+  ) {
+
+
+    if (!escena) {
+
+      return;
+
+    }
+
+
+
+    /*
+    Detener giro.
+    */
+
+
+    escena.rotor.removeAttribute(
+      "animation__giro"
+    );
+
+
+
+    /*
+    Regresar al inicio.
+    */
+
+
+    escena.rotor.setAttribute(
+
+      "rotation",
+
+      "0 0 0"
+
+    );
+
+
+
+    /*
+    Ocultar ayudas.
+    */
+
+
+    escena.generatriz.setAttribute(
+
+      "visible",
+
+      false
+
+    );
+
+
+    escena.eje.setAttribute(
+
+      "visible",
+
+      false
+
+    );
+
+
+    escena.textoEje.setAttribute(
+
+      "visible",
+
+      false
+
+    );
+
+
+
+    /*
+    Ocultar sólido.
+    */
+
+
+    escena.solido3D.setAttribute(
+
+      "visible",
+
+      false
+
+    );
+
+
+    escena.resultado.setAttribute(
+
+      "visible",
+
+      false
+
+    );
+
+
+  }
+
+
+
+  /* =====================================================
+     MOSTRAR GENERATRIZ + EJE
+     ===================================================== */
+
+
+  function mostrarGeneratriz(
+    escena
+  ) {
+
+
+    if (!escena) {
+
+      return;
+
+    }
+
+
+
+    escena.generatriz.setAttribute(
+
+      "visible",
+
+      true
+
+    );
+
+
+    escena.eje.setAttribute(
+
+      "visible",
+
+      true
+
+    );
+
+
+    escena.textoEje.setAttribute(
+
+      "visible",
+
+      true
+
+    );
+
+
+
+    estado.textContent =
+
+      "Rojo = generatriz | Azul = eje de giro";
+
+
+  }
+
+
+
+  /* =====================================================
+     HACER GIRAR
+     ===================================================== */
+
+
+  function girar(
+    escena
+  ) {
+
+
+    if (!escena) {
+
+      return;
+
+    }
+
+
+
+    /*
+    Mostramos eje y generatriz.
+    */
+
+
+    mostrarGeneratriz(
+      escena
+    );
+
+
+
+    /*
+    Mostramos el sólido
+    de manera transparente.
+
+    Así el estudiante puede
+    observar cómo la figura
+    barre el espacio que forma
+    el cuerpo geométrico.
+    */
+
+
+    escena.solido3D.setAttribute(
+
+      "visible",
+
+      true
+
+    );
+
+
+    escena.resultado.setAttribute(
+
+      "visible",
+
+      true
+
+    );
+
+
+
+    /*
+    Giro rápido.
+
+    850 ms por revolución.
+    */
+
+
+    escena.rotor.setAttribute(
+
+      "animation__giro",
+
+      {
+
+        property:
+          "rotation",
+
+        from:
+          "0 0 0",
+
+        to:
+          "0 360 0",
+
+        dur:
+          850,
+
+        easing:
+          "linear",
+
+        loop:
+          true
+
+      }
+
+    );
+
+
+
+    estado.textContent =
+
+      escena.nombre
+
+      +
+
+      " girando → "
+
+      +
+
+      escena.solido;
+
+
+  }
+
+
+
+  /* =====================================================
+     DETENER
+     ===================================================== */
+
+
+  function detener(
+    escena
+  ) {
+
+
+    if (!escena) {
+
+      return;
+
+    }
+
+
+
+    escena.rotor.removeAttribute(
+
+      "animation__giro"
+
+    );
+
+
+
+    /*
+    El sólido permanece visible
+    para observar el resultado.
+    */
+
+
+    escena.solido3D.setAttribute(
+
+      "visible",
+
+      true
+
+    );
+
+
+    escena.resultado.setAttribute(
+
+      "visible",
+
+      true
+
+    );
+
+
+
+    estado.textContent =
+
+      "Resultado: "
+
+      +
+
+      escena.solido;
+
+
+  }
+
+
+
+  /* =====================================================
+     TARGET 0
+     SEMICÍRCULO
+     ===================================================== */
+
+
+  escenas.semicirculo.target.addEventListener(
+
+    "targetFound",
+
+    () => {
+
+
+      escenaActual =
+        escenas.semicirculo;
+
+
+      habilitarBotones(
+        true
+      );
+
+
+      estado.textContent =
+
+        "Semicírculo detectado ✓";
+
+
+    }
+
+  );
+
+
+
+  escenas.semicirculo.target.addEventListener(
+
+    "targetLost",
+
+    () => {
+
+
+      if (
+        escenaActual ===
+        escenas.semicirculo
+      ) {
+
+
+        reiniciarEscena(
+          escenaActual
+        );
+
+
+        escenaActual = null;
+
+
+        habilitarBotones(
+          false
+        );
+
+
+        estado.textContent =
+
+          "Enfoca una de las tres figuras";
+
+
+      }
+
+
+    }
+
+  );
+
+
+
+  /* =====================================================
+     TARGET 1
+     RECTÁNGULO
+     ===================================================== */
+
+
+  escenas.rectangulo.target.addEventListener(
+
+    "targetFound",
+
+    () => {
+
+
+      escenaActual =
+        escenas.rectangulo;
+
+
+      habilitarBotones(
+        true
+      );
+
+
+      estado.textContent =
+
+        "Rectángulo detectado ✓";
+
+
+    }
+
+  );
+
+
+
+  escenas.rectangulo.target.addEventListener(
+
+    "targetLost",
+
+    () => {
+
+
+      if (
+        escenaActual ===
+        escenas.rectangulo
+      ) {
+
+
+        reiniciarEscena(
+          escenaActual
+        );
+
+
+        escenaActual = null;
+
+
+        habilitarBotones(
+          false
+        );
+
+
+        estado.textContent =
+
+          "Enfoca una de las tres figuras";
+
+
+      }
+
+
+    }
+
+  );
+
+
+
+  /* =====================================================
+     TARGET 2
+     TRIÁNGULO
+     ===================================================== */
+
+
+  escenas.triangulo.target.addEventListener(
+
+    "targetFound",
+
+    () => {
+
+
+      escenaActual =
+        escenas.triangulo;
+
+
+      habilitarBotones(
+        true
+      );
+
+
+      estado.textContent =
+
+        "Triángulo detectado ✓";
+
+
+    }
+
+  );
+
+
+
+  escenas.triangulo.target.addEventListener(
+
+    "targetLost",
+
+    () => {
+
+
+      if (
+        escenaActual ===
+        escenas.triangulo
+      ) {
+
+
+        reiniciarEscena(
+          escenaActual
+        );
+
+
+        escenaActual = null;
+
+
+        habilitarBotones(
+          false
+        );
+
+
+        estado.textContent =
+
+          "Enfoca una de las tres figuras";
+
+
+      }
+
+
+    }
+
+  );
+
+
+
+  /* =====================================================
+     ACCIONES DE LOS BOTONES
+     ===================================================== */
+
+
+  btnGeneratriz.addEventListener(
+
+    "click",
+
+    () => {
+
+
+      mostrarGeneratriz(
+        escenaActual
+      );
+
+
+    }
+
+  );
+
+
+
+  btnGirar.addEventListener(
+
+    "click",
+
+    () => {
+
+
+      girar(
+        escenaActual
+      );
+
+
+    }
+
+  );
+
+
+
+  btnDetener.addEventListener(
+
+    "click",
+
+    () => {
+
+
+      detener(
+        escenaActual
+      );
+
+
+    }
+
+  );
+
+
+
+  btnReiniciar.addEventListener(
+
+    "click",
+
+    () => {
+
+
+      reiniciarEscena(
+        escenaActual
+      );
+
+
+      if (
+        escenaActual
+      ) {
+
+
+        estado.textContent =
+
+          escenaActual.nombre
+
+          +
+
+          " detectado ✓";
+
+
+      }
+
+
+    }
+
+  );
+
+
+
+  /* =====================================================
+     ESTADO INICIAL
+     ===================================================== */
+
+
+  habilitarBotones(
+    false
+  );
+
+
+</script>
+
+
+</body>
+
+</html>
