@@ -13,19 +13,12 @@
   <title>Sólidos de Revolución</title>
 
 
-  <!-- ===================================================== -->
-  <!-- A-FRAME                                               -->
-  <!-- ===================================================== -->
-
+  <!-- A-FRAME -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
 
-  <!-- ===================================================== -->
-  <!-- MINDAR                                                -->
-  <!-- ===================================================== -->
-
+  <!-- MINDAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
 
 
   <style>
@@ -49,10 +42,7 @@
     }
 
 
-
-    /* ===================================================== */
-    /* QUITAR BOTÓN VR                                       */
-    /* ===================================================== */
+    /* Quitar botones VR */
 
     .a-enter-vr,
     .a-enter-vr-button,
@@ -88,7 +78,7 @@
         14px;
 
       background:
-        rgba(20, 42, 31, 0.88);
+        rgba(23, 57, 42, 0.90);
 
       color:
         white;
@@ -147,7 +137,7 @@
 
       border:
         2px solid
-        rgba(255,255,255,0.82);
+        rgba(255,255,255,0.85);
 
       border-radius:
         18px;
@@ -187,10 +177,9 @@
 
 
     /*
-    Mientras NO exista un target detectado:
-
-    los botones permanecen visibles,
-    pero se ven atenuados y no funcionan.
+    Cuando MindAR todavía está buscando,
+    los botones siguen visibles pero
+    deshabilitados y atenuados.
     */
 
     button:disabled {
@@ -215,8 +204,6 @@
 
     }
 
-
-
   </style>
 
 
@@ -239,17 +226,6 @@
 
           const figura =
             new THREE.Shape();
-
-
-
-          /*
-                    ●
-                    |\
-                    | \
-          EJE  ---> |  \  <--- GENERATRIZ
-                    |   \
-                    |____\
-          */
 
 
           figura.moveTo(
@@ -346,7 +322,6 @@
 
           const figura =
             new THREE.Shape();
-
 
 
           figura.moveTo(
@@ -614,7 +589,7 @@
 
 
 <!-- ====================================================== -->
-<!-- MENSAJE SUPERIOR                                       -->
+<!-- MENSAJE                                                -->
 <!-- ====================================================== -->
 
 <div id="estado">
@@ -626,7 +601,7 @@
 
 
 <!-- ====================================================== -->
-<!-- CONTROLES                                              -->
+<!-- BOTONES                                                -->
 <!-- ====================================================== -->
 
 <div id="controles">
@@ -707,15 +682,11 @@
 >
 
 
-  <!-- ==================================================== -->
-  <!-- CÁMARA                                               -->
-  <!-- ==================================================== -->
+  <!-- CÁMARA -->
 
   <a-camera
 
-    position="
-      0 0 0
-    "
+    position="0 0 0"
 
     look-controls="
       enabled: false
@@ -727,10 +698,8 @@
 
 
   <!-- #################################################### -->
-  <!--                                                      -->
   <!-- TARGET 0                                             -->
   <!-- SEMICÍRCULO → ESFERA                                 -->
-  <!--                                                      -->
   <!-- #################################################### -->
 
   <a-entity
@@ -745,37 +714,107 @@
 
 
 
-    <!-- TÍTULO -->
+    <!-- ================================================== -->
+    <!-- TÍTULO CON PLACA                                   -->
+    <!-- ================================================== -->
 
-    <a-text
-
-      value="
-        SEMICIRCULO  ->  ESFERA
-      "
+    <a-entity
 
       position="
-        0 0.43 0.07
-      "
-
-      align="
-        center
-      "
-
-      color="
-        #17392A
-      "
-
-      width="
-        2.3
+        0 0.43 0.08
       ">
 
-    </a-text>
+
+      <!-- BORDE -->
+
+      <a-plane
+
+        width="
+          0.79
+        "
+
+        height="
+          0.115
+        "
+
+        color="
+          #17392A
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.68;
+          side: double;
+        "
+
+        position="
+          0 0 0
+        ">
+
+      </a-plane>
+
+
+      <!-- FONDO CLARO -->
+
+      <a-plane
+
+        width="
+          0.765
+        "
+
+        height="
+          0.095
+        "
+
+        color="
+          #F4F0E6
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.90;
+          side: double;
+        "
+
+        position="
+          0 0 0.004
+        ">
+
+      </a-plane>
+
+
+      <!-- TEXTO -->
+
+      <a-text
+
+        value="
+          SEMICIRCULO -> ESFERA
+        "
+
+        position="
+          0 0 0.009
+        "
+
+        align="
+          center
+        "
+
+        color="
+          #17392A
+        "
+
+        width="
+          2.25
+        ">
+
+      </a-text>
+
+
+    </a-entity>
 
 
 
-    <!-- ================================================== -->
-    <!-- CONSTRUCCIÓN INCLINADA                              -->
-    <!-- ================================================== -->
+    <!-- CONSTRUCCIÓN INCLINADA -->
 
     <a-entity
 
@@ -785,7 +824,7 @@
 
 
 
-      <!-- EJE DE GIRO -->
+      <!-- EJE -->
 
       <a-entity
 
@@ -804,8 +843,6 @@
       </a-entity>
 
 
-
-      <!-- TEXTO EJE -->
 
       <a-text
 
@@ -846,9 +883,6 @@
         id="rotorSemicirculo">
 
 
-
-        <!-- FIGURA -->
-
         <a-entity
 
           id="figuraSemicirculo"
@@ -862,8 +896,6 @@
         </a-entity>
 
 
-
-        <!-- GENERATRIZ -->
 
         <a-entity
 
@@ -896,9 +928,7 @@
 
 
 
-      <!-- ================================================== -->
-      <!-- ESFERA FINAL                                       -->
-      <!-- ================================================== -->
+      <!-- ESFERA FINAL -->
 
       <a-entity
 
@@ -908,9 +938,6 @@
           false
         ">
 
-
-
-        <!-- RELLENO -->
 
         <a-sphere
 
@@ -933,8 +960,6 @@
         </a-sphere>
 
 
-
-        <!-- MALLA -->
 
         <a-sphere
 
@@ -959,9 +984,11 @@
 
 
 
-    <!-- RESULTADO -->
+    <!-- ================================================== -->
+    <!-- RESULTADO CON PLACA                                -->
+    <!-- ================================================== -->
 
-    <a-text
+    <a-entity
 
       id="resultadoSemicirculo"
 
@@ -969,27 +996,87 @@
         false
       "
 
-      value="
-        SE FORMA UNA ESFERA
-      "
-
       position="
-        0 -0.40 0.07
-      "
-
-      align="
-        center
-      "
-
-      color="
-        #17392A
-      "
-
-      width="
-        2.3
+        0 -0.40 0.08
       ">
 
-    </a-text>
+
+      <a-plane
+
+        width="
+          0.69
+        "
+
+        height="
+          0.115
+        "
+
+        color="
+          #17392A
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.68;
+          side: double;
+        ">
+
+      </a-plane>
+
+
+      <a-plane
+
+        width="
+          0.665
+        "
+
+        height="
+          0.095
+        "
+
+        color="
+          #F4F0E6
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.90;
+          side: double;
+        "
+
+        position="
+          0 0 0.004
+        ">
+
+      </a-plane>
+
+
+      <a-text
+
+        value="
+          SE FORMA UNA ESFERA
+        "
+
+        position="
+          0 0 0.009
+        "
+
+        align="
+          center
+        "
+
+        color="
+          #17392A
+        "
+
+        width="
+          2.2
+        ">
+
+      </a-text>
+
+
+    </a-entity>
 
 
   </a-entity>
@@ -999,10 +1086,8 @@
 
 
   <!-- #################################################### -->
-  <!--                                                      -->
   <!-- TARGET 1                                             -->
   <!-- RECTÁNGULO → CILINDRO                                -->
-  <!--                                                      -->
   <!-- #################################################### -->
 
   <a-entity
@@ -1017,29 +1102,91 @@
 
 
 
-    <a-text
+    <!-- TÍTULO -->
 
-      value="
-        RECTANGULO  ->  CILINDRO
-      "
+    <a-entity
 
       position="
-        0 0.43 0.07
-      "
-
-      align="
-        center
-      "
-
-      color="
-        #17392A
-      "
-
-      width="
-        2.3
+        0 0.43 0.08
       ">
 
-    </a-text>
+
+      <a-plane
+
+        width="
+          0.79
+        "
+
+        height="
+          0.115
+        "
+
+        color="
+          #17392A
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.68;
+          side: double;
+        ">
+
+      </a-plane>
+
+
+      <a-plane
+
+        width="
+          0.765
+        "
+
+        height="
+          0.095
+        "
+
+        color="
+          #F4F0E6
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.90;
+          side: double;
+        "
+
+        position="
+          0 0 0.004
+        ">
+
+      </a-plane>
+
+
+      <a-text
+
+        value="
+          RECTANGULO -> CILINDRO
+        "
+
+        position="
+          0 0 0.009
+        "
+
+        align="
+          center
+        "
+
+        color="
+          #17392A
+        "
+
+        width="
+          2.2
+        ">
+
+      </a-text>
+
+
+    </a-entity>
 
 
 
@@ -1110,9 +1257,6 @@
         id="rotorRectangulo">
 
 
-
-        <!-- RECTÁNGULO -->
-
         <a-plane
 
           id="figuraRectangulo"
@@ -1142,8 +1286,6 @@
         </a-plane>
 
 
-
-        <!-- GENERATRIZ -->
 
         <a-entity
 
@@ -1176,9 +1318,7 @@
 
 
 
-      <!-- ================================================== -->
-      <!-- CILINDRO FINAL                                     -->
-      <!-- ================================================== -->
+      <!-- CILINDRO FINAL -->
 
       <a-entity
 
@@ -1187,7 +1327,6 @@
         visible="
           false
         ">
-
 
 
         <a-cylinder
@@ -1243,7 +1382,9 @@
 
 
 
-    <a-text
+    <!-- RESULTADO -->
+
+    <a-entity
 
       id="resultadoRectangulo"
 
@@ -1251,27 +1392,87 @@
         false
       "
 
-      value="
-        SE FORMA UN CILINDRO
-      "
-
       position="
-        0 -0.40 0.07
-      "
-
-      align="
-        center
-      "
-
-      color="
-        #17392A
-      "
-
-      width="
-        2.3
+        0 -0.40 0.08
       ">
 
-    </a-text>
+
+      <a-plane
+
+        width="
+          0.71
+        "
+
+        height="
+          0.115
+        "
+
+        color="
+          #17392A
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.68;
+          side: double;
+        ">
+
+      </a-plane>
+
+
+      <a-plane
+
+        width="
+          0.685
+        "
+
+        height="
+          0.095
+        "
+
+        color="
+          #F4F0E6
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.90;
+          side: double;
+        "
+
+        position="
+          0 0 0.004
+        ">
+
+      </a-plane>
+
+
+      <a-text
+
+        value="
+          SE FORMA UN CILINDRO
+        "
+
+        position="
+          0 0 0.009
+        "
+
+        align="
+          center
+        "
+
+        color="
+          #17392A
+        "
+
+        width="
+          2.15
+        ">
+
+      </a-text>
+
+
+    </a-entity>
 
 
   </a-entity>
@@ -1281,10 +1482,8 @@
 
 
   <!-- #################################################### -->
-  <!--                                                      -->
   <!-- TARGET 2                                             -->
   <!-- TRIÁNGULO → CONO                                     -->
-  <!--                                                      -->
   <!-- #################################################### -->
 
   <a-entity
@@ -1299,29 +1498,91 @@
 
 
 
-    <a-text
+    <!-- TÍTULO -->
 
-      value="
-        TRIANGULO  ->  CONO
-      "
+    <a-entity
 
       position="
-        0 0.43 0.07
-      "
-
-      align="
-        center
-      "
-
-      color="
-        #17392A
-      "
-
-      width="
-        2.3
+        0 0.43 0.08
       ">
 
-    </a-text>
+
+      <a-plane
+
+        width="
+          0.74
+        "
+
+        height="
+          0.115
+        "
+
+        color="
+          #17392A
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.68;
+          side: double;
+        ">
+
+      </a-plane>
+
+
+      <a-plane
+
+        width="
+          0.715
+        "
+
+        height="
+          0.095
+        "
+
+        color="
+          #F4F0E6
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.90;
+          side: double;
+        "
+
+        position="
+          0 0 0.004
+        ">
+
+      </a-plane>
+
+
+      <a-text
+
+        value="
+          TRIANGULO -> CONO
+        "
+
+        position="
+          0 0 0.009
+        "
+
+        align="
+          center
+        "
+
+        color="
+          #17392A
+        "
+
+        width="
+          2.2
+        ">
+
+      </a-text>
+
+
+    </a-entity>
 
 
 
@@ -1392,9 +1653,6 @@
         id="rotorTriangulo">
 
 
-
-        <!-- TRIÁNGULO -->
-
         <a-entity
 
           id="figuraTriangulo"
@@ -1408,8 +1666,6 @@
         </a-entity>
 
 
-
-        <!-- GENERATRIZ -->
 
         <a-entity
 
@@ -1442,9 +1698,7 @@
 
 
 
-      <!-- ================================================== -->
-      <!-- CONO FINAL                                         -->
-      <!-- ================================================== -->
+      <!-- CONO -->
 
       <a-entity
 
@@ -1453,7 +1707,6 @@
         visible="
           false
         ">
-
 
 
         <a-cone
@@ -1517,7 +1770,9 @@
 
 
 
-    <a-text
+    <!-- RESULTADO -->
+
+    <a-entity
 
       id="resultadoTriangulo"
 
@@ -1525,27 +1780,87 @@
         false
       "
 
-      value="
-        SE FORMA UN CONO
-      "
-
       position="
-        0 -0.40 0.07
-      "
-
-      align="
-        center
-      "
-
-      color="
-        #17392A
-      "
-
-      width="
-        2.3
+        0 -0.40 0.08
       ">
 
-    </a-text>
+
+      <a-plane
+
+        width="
+          0.63
+        "
+
+        height="
+          0.115
+        "
+
+        color="
+          #17392A
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.68;
+          side: double;
+        ">
+
+      </a-plane>
+
+
+      <a-plane
+
+        width="
+          0.605
+        "
+
+        height="
+          0.095
+        "
+
+        color="
+          #F4F0E6
+        "
+
+        material="
+          transparent: true;
+          opacity: 0.90;
+          side: double;
+        "
+
+        position="
+          0 0 0.004
+        ">
+
+      </a-plane>
+
+
+      <a-text
+
+        value="
+          SE FORMA UN CONO
+        "
+
+        position="
+          0 0 0.009
+        "
+
+        align="
+          center
+        "
+
+        color="
+          #17392A
+        "
+
+        width="
+          2.2
+        ">
+
+      </a-text>
+
+
+    </a-entity>
 
 
   </a-entity>
@@ -1613,47 +1928,21 @@
 
 
   /* ===================================================== */
-  /* AJUSTES DEL EFECTO                                    */
+  /* EFECTO DE GIRO                                        */
   /* ===================================================== */
 
-
-  /*
-  1.2 segundos por vuelta.
-
-  Se ve rápido,
-  pero todavía permite observar
-  cómo gira la figura.
-  */
 
   const VELOCIDAD_GIRO =
     1200;
 
 
-
-  /*
-  Cada 80 milisegundos
-  creamos un rastro.
-  */
-
   const INTERVALO_RASTRO =
     80;
 
 
-
-  /*
-  Cada rastro desaparece
-  en 560 milisegundos.
-  */
-
   const DURACION_RASTRO =
     560;
 
-
-
-  /*
-  Transparencia inicial
-  de cada fantasma.
-  */
 
   const OPACIDAD_RASTRO =
     0.24;
@@ -1661,17 +1950,13 @@
 
 
   /* ===================================================== */
-  /* CONFIGURAR ESCENAS                                    */
+  /* ESCENAS                                               */
   /* ===================================================== */
 
 
   const escenas = {
 
 
-
-    /* --------------------------------------------------- */
-    /* SEMICÍRCULO                                         */
-    /* --------------------------------------------------- */
 
     semicirculo: {
 
@@ -1732,18 +2017,11 @@
         ),
 
       timerRastro:
-        null,
-
-      girando:
-        false
+        null
 
     },
 
 
-
-    /* --------------------------------------------------- */
-    /* RECTÁNGULO                                          */
-    /* --------------------------------------------------- */
 
     rectangulo: {
 
@@ -1804,18 +2082,11 @@
         ),
 
       timerRastro:
-        null,
-
-      girando:
-        false
+        null
 
     },
 
 
-
-    /* --------------------------------------------------- */
-    /* TRIÁNGULO                                           */
-    /* --------------------------------------------------- */
 
     triangulo: {
 
@@ -1876,10 +2147,7 @@
         ),
 
       timerRastro:
-        null,
-
-      girando:
-        false
+        null
 
     }
 
@@ -1888,18 +2156,13 @@
 
 
 
-  /*
-  Aquí guardamos el target
-  que está viendo la cámara.
-  */
-
   let escenaActual =
     null;
 
 
 
   /* ===================================================== */
-  /* BOTONES ACTIVOS / INACTIVOS                           */
+  /* BOTONES                                               */
   /* ===================================================== */
 
 
@@ -1927,7 +2190,7 @@
 
 
   /* ===================================================== */
-  /* MOSTRAR GENERATRIZ                                    */
+  /* GENERATRIZ                                            */
   /* ===================================================== */
 
 
@@ -2024,7 +2287,7 @@
 
 
   /* ===================================================== */
-  /* CREAR UNA COPIA FANTASMA                              */
+  /* CREAR RASTRO                                          */
   /* ===================================================== */
 
 
@@ -2044,22 +2307,12 @@
 
 
 
-    /*
-    Copiamos solamente la FIGURA,
-    no el sólido final.
-    */
-
     const copiaFigura =
       escena.figura.object3D.clone(
         true
       );
 
 
-
-    /*
-    Cada copia necesita sus
-    propios materiales.
-    */
 
     const materiales =
       [];
@@ -2102,14 +2355,6 @@
 
 
 
-    /*
-    Creamos un grupo.
-
-    El grupo reproduce exactamente
-    la rotación que tenía la figura
-    en ese instante.
-    */
-
     const fantasma =
       new THREE.Group();
 
@@ -2139,19 +2384,10 @@
 
 
 
-    /*
-    Momento en que aparece
-    el rastro.
-    */
-
     const inicio =
       performance.now();
 
 
-
-    /*
-    Desvanecimiento.
-    */
 
     function desaparecer(
       ahora
@@ -2288,11 +2524,6 @@
     }
 
 
-
-    escena.girando =
-      false;
-
-
   }
 
 
@@ -2315,20 +2546,11 @@
 
 
 
-    /*
-    Si ya estaba girando,
-    detenemos la animación anterior.
-    */
-
     detenerMotor(
       escena
     );
 
 
-
-    /*
-    Empezamos desde cero.
-    */
 
     escena.rotor.setAttribute(
 
@@ -2347,9 +2569,7 @@
 
 
     /*
-    Durante el giro:
-
-    NO mostramos todavía
+    No mostramos todavía
     el sólido final.
     */
 
@@ -2372,20 +2592,11 @@
 
 
 
-    /*
-    Sí mostramos la generatriz
-    y el eje.
-    */
-
     mostrarGeneratriz(
       escena
     );
 
 
-
-    /*
-    GIRO RÁPIDO
-    */
 
     escena.rotor.setAttribute(
 
@@ -2417,10 +2628,6 @@
 
 
 
-    /*
-    Efecto de barrido.
-    */
-
     escena.timerRastro =
       setInterval(
 
@@ -2437,11 +2644,6 @@
         INTERVALO_RASTRO
 
       );
-
-
-
-    escena.girando =
-      true;
 
 
 
@@ -2481,14 +2683,6 @@
     );
 
 
-
-    /*
-    NO revelamos todavía
-    el sólido final.
-
-    Esa es función del botón
-    VER SÓLIDO.
-    */
 
     escena.solido3D.setAttribute(
 
@@ -2536,28 +2730,11 @@
 
 
 
-    /*
-    Si el estudiante pulsa
-    VER SÓLIDO mientras gira,
-    primero detenemos.
-    */
-
     detenerMotor(
       escena
     );
 
 
-
-    /*
-    Dejamos desaparecer los
-    últimos rastros naturalmente.
-    */
-
-
-
-    /*
-    Hacemos visible el sólido.
-    */
 
     escena.solido3D.setAttribute(
 
@@ -2568,12 +2745,6 @@
     );
 
 
-
-    /*
-    Reiniciamos la opacidad
-    para crear un efecto
-    de aparición.
-    */
 
     escena.relleno.setAttribute(
 
@@ -2586,11 +2757,6 @@
     );
 
 
-
-    /*
-    El sólido aparece
-    progresivamente.
-    */
 
     escena.relleno.setAttribute(
 
@@ -2719,7 +2885,6 @@
     );
 
 
-
     escena.resultado.setAttribute(
 
       "visible",
@@ -2752,7 +2917,7 @@
 
 
   /* ===================================================== */
-  /* EVENTOS DE MINDAR                                     */
+  /* TARGETS                                               */
   /* ===================================================== */
 
 
@@ -2760,10 +2925,6 @@
     escena
   ) {
 
-
-    /*
-    TARGET ENCONTRADO
-    */
 
     escena.target.addEventListener(
 
@@ -2795,10 +2956,6 @@
     );
 
 
-
-    /*
-    TARGET PERDIDO
-    */
 
     escena.target.addEventListener(
 
@@ -2844,11 +3001,6 @@
 
 
 
-  /* ===================================================== */
-  /* PREPARAR LOS TRES TARGETS                              */
-  /* ===================================================== */
-
-
   prepararTarget(
 
     escenas.semicirculo
@@ -2872,7 +3024,7 @@
 
 
   /* ===================================================== */
-  /* ACCIONES DE BOTONES                                    */
+  /* EVENTOS DE BOTONES                                     */
   /* ===================================================== */
 
 
@@ -2976,15 +3128,10 @@
 
 
 
-  /* ===================================================== */
-  /* ESTADO INICIAL                                        */
-  /* ===================================================== */
-
+  /* ESTADO INICIAL */
 
   habilitarBotones(
-
     false
-
   );
 
 
